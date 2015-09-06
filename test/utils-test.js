@@ -115,4 +115,16 @@ describe('utils', function() {
       assert.deepEqual(a, expected);
     });
   });
+
+  describe('e', function() {
+    it('should expand', function() {
+      var out = [ 0, 0 ];
+      utils.e(bin('1111 0000 1010 1010 1111 0000 1010 1010'), out, 0);
+      var expected = [
+        bin('011110 100001 010101 010101'),
+        bin('011110 100001 010101 010101')
+      ];
+      assert.deepEqual(out, expected);
+    });
+  });
 });

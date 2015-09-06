@@ -54,4 +54,23 @@ describe('DES', function() {
       assert.deepEqual(d._desState.keys, expected);
     });
   });
+
+  describe('encryption', function() {
+    it('should encrypt properly', function() {
+      var d = des.DES.create([
+        0x13, 0x34, 0x57, 0x79,
+        0x9B, 0xBC, 0xDF, 0xF1
+      ]);
+
+      var out = d.update([
+        0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF
+      ]);
+
+      var expected = [
+        0x85, 0xE8, 0x13, 0x54, 0x0F, 0x0A, 0xB4, 0x05
+      ];
+
+      assert.deepEqual(out, expected);
+    });
+  });
 });

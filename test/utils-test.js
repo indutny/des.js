@@ -116,15 +116,54 @@ describe('utils', function() {
     });
   });
 
-  describe('e', function() {
+  describe('expand', function() {
     it('should expand', function() {
       var out = [ 0, 0 ];
-      utils.e(bin('1111 0000 1010 1010 1111 0000 1010 1010'), out, 0);
+      utils.expand(bin('1111 0000 1010 1010 1111 0000 1010 1010'), out, 0);
       var expected = [
         bin('011110 100001 010101 010101'),
         bin('011110 100001 010101 010101')
       ];
       assert.deepEqual(out, expected);
+    });
+
+    it('should expand with low 1', function() {
+      var out = [ 0, 0 ];
+      utils.expand(bin('1111 0000 1010 1010 1111 0000 1010 1011'), out, 0);
+      var expected = [
+        bin('111110 100001 010101 010101'),
+        bin('011110 100001 010101 010111')
+      ];
+      assert.deepEqual(out, expected);
+    });
+
+    it('should expand with low 1', function() {
+      var out = [ 0, 0 ];
+      utils.expand(bin('10100010 01011100 00001011 11110100'), out, 0);
+      var expected = [
+        bin('010100 000100 001011 111000'),
+        bin('000001 010111 111110 101001')
+      ];
+      assert.deepEqual(out, expected);
+    });
+  });
+
+  describe('substitute', function() {
+    it('should substitute', function() {
+      var input = [
+        bin('011000 010001 011110 111010'),
+        bin('100001 100110 010100 100111')
+      ];
+      var output = utils.substitute(input[0], input[1]);
+      assert.equal(output, bin('0101 1100 1000 0010 1011 0101 1001 0111'));
+    });
+  });
+
+  describe('permute', function() {
+    it('should permute', function() {
+      var output = utils.permute(
+          bin('0101 1100 1000 0010 1011 0101 1001 0111'));
+      assert.equal(output, bin('0010 0011 0100 1010 1010 1001 1011 1011'));
     });
   });
 });

@@ -12,10 +12,10 @@ var bin = fixtures.bin;
 describe('DES', function() {
   describe('Key Derivation', function() {
     it('should derive proper keys', function() {
-      var d = des.DES.create('encrypt', [
-        0x13, 0x34, 0x57, 0x79,
-        0x9B, 0xBC, 0xDF, 0xF1
-      ]);
+      var d = des.DES.create({
+        type: 'encrypt',
+        key: [ 0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1 ]
+      });
 
       var expected = [
         '000110 110000 001011 101111',
@@ -87,8 +87,14 @@ describe('DES', function() {
         var key = new Buffer(vec.key, 'hex');
         var input = new Buffer(vec.input, 'hex');
 
-        var enc = des.DES.create('encrypt', key);
-        var dec = des.DES.create('decrypt', key);
+        var enc = des.DES.create({
+          type: 'encrypt',
+          key: key
+        });
+        var dec = des.DES.create({
+          type: 'decrypt',
+          key: key
+        });
         var out = new Buffer(enc.update(input).concat(enc.final()));
 
         var cipher = crypto.createCipheriv('des-ecb', key, new Buffer(0));
@@ -108,13 +114,19 @@ describe('DES', function() {
       var expected = new Buffer(
           new Array(count + 1).join('01020304050607'), 'hex');
 
-      var enc = des.DES.create('encrypt', key);
+      var enc = des.DES.create({
+        type: 'encrypt',
+        key: key
+      });
       var cipher = [];
       for (var i = 0; i < count; i++)
         cipher = cipher.concat(enc.update(chunk));
       cipher = cipher.concat(enc.final());
 
-      var dec = des.DES.create('decrypt', key);
+      var dec = des.DES.create({
+        type: 'decrypt',
+        key: key
+      });
       var out = [];
       for (var i = 0; i < count; i++)
         out = out.concat(dec.update(cipher.slice(i * 7, (i + 1) * 7)));

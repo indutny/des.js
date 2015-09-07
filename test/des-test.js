@@ -12,7 +12,7 @@ var bin = fixtures.bin;
 describe('DES', function() {
   describe('Key Derivation', function() {
     it('should derive proper keys', function() {
-      var d = des.DES.create([
+      var d = des.DES.create('encrypt', [
         0x13, 0x34, 0x57, 0x79,
         0x9B, 0xBC, 0xDF, 0xF1
       ]);
@@ -57,7 +57,7 @@ describe('DES', function() {
     });
   });
 
-  describe('encryption', function() {
+  describe('encryption/decryption', function() {
     var vectors = [
       {
         key: '133457799bbcdff1',
@@ -70,22 +70,58 @@ describe('DES', function() {
       {
         key: 'a3a3a3a3b3b3b3b3',
         input: 'cccccccccccccccc'
+      },
+      {
+        key: 'deadbeefabbadead',
+        input: '0102030405060708090a'
+      },
+      {
+        key: 'aabbccddeeff0011',
+        input: '0102030405060708090a0102030405060708090a0102030405060708090a' +
+               '0102030405060708090a0102030405060607080a0102030405060708090a'
       }
     ];
 
     vectors.forEach(function(vec, i) {
       it('should encrypt vector ' + i, function() {
         var key = new Buffer(vec.key, 'hex');
-        var input = new Buffer(vec.input);
+        var input = new Buffer(vec.input, 'hex');
 
-        var d = des.DES.create(key, 'hex');
-        var out = new Buffer(d.update(input));
+        var enc = des.DES.create('encrypt', key);
+        var dec = des.DES.create('decrypt', key);
+        var out = new Buffer(enc.update(input).concat(enc.final()));
 
         var cipher = crypto.createCipheriv('des-ecb', key, new Buffer(0));
-        var expected = cipher.update(input);
+        var expected = Buffer.concat([ cipher.update(input), cipher.final() ]);
 
         assert.deepEqual(out, expected);
+
+        assert.deepEqual(new Buffer(dec.update(out).concat(dec.final())),
+                         input);
       });
+    });
+
+    it('should buffer during encryption/decryption', function() {
+      var key = new Buffer('0102030405060708', 'hex');
+      var chunk = new Buffer('01020304050607', 'hex');
+      var count = 257;
+      var expected = new Buffer(
+          new Array(count + 1).join('01020304050607'), 'hex');
+
+      var enc = des.DES.create('encrypt', key);
+      var cipher = [];
+      for (var i = 0; i < count; i++)
+        cipher = cipher.concat(enc.update(chunk));
+      cipher = cipher.concat(enc.final());
+
+      var dec = des.DES.create('decrypt', key);
+      var out = [];
+      for (var i = 0; i < count; i++)
+        out = out.concat(dec.update(cipher.slice(i * 7, (i + 1) * 7)));
+      out = out.concat(dec.final(cipher.slice(i * 7)));
+
+      out = new Buffer(out);
+      assert.deepEqual(out, expected);
     });
   });
 });

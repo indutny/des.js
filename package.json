@@ -1,6 +1,6 @@
 {
   "name": "des.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DES implementation",
   "main": "lib/des.js",
   "scripts": {

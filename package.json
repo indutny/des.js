@@ -4,7 +4,7 @@
   "description": "DES implementation",
   "main": "lib/des.js",
   "scripts": {
-    "test": "mocha --reporter=spec test/*-test.js && jscs lib/*.js lib/**/*.js test/*.js && jshint lib/*.js lib/**/*.js"
+    "test": "NODE_OPTIONS=--openssl-legacy-provider mocha --reporter=spec test/*-test.js && jscs lib/*.js lib/**/*.js test/*.js && jshint lib/*.js lib/**/*.js"
   },
   "repository": {
     "type": "git",
